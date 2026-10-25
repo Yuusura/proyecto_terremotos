@@ -1,0 +1,9 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    height: 80vh; /* Ocupará toda la altura de la ventana del navegador. */
+}
+
