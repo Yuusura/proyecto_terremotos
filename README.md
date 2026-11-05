@@ -10,6 +10,12 @@ La interfaz está en español y utiliza dos mapas Leaflet: uno oscuro para la ac
 
 Imagen de presentación editada a partir de la aplicación. Es ilustrativa: los marcadores y los nombres del mapa no son una captura de datos en tiempo real.
 
+### Mapa de terremotos filtrados
+
+![Vista previa del mapa inferior con los filtros de magnitud y fecha](assets/filtered-map-preview.png)
+
+Diseño ilustrativo del segundo mapa y su formulario de filtros. Los puntos y el mapa son de ejemplo, no representan resultados en tiempo real.
+
 ## Funcionalidades
 
 - **Actividad de las últimas 24 horas:** carga el feed GeoJSON diario del USGS y representa los eventos con marcadores circulares.

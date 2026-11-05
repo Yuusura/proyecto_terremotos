@@ -1,7 +1,9 @@
+//Importación de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
+//Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCHn8qtd-TJqpmPTgkTto0VIzSQjBuy5u8",
   authDomain: "proyectoterremotos.firebaseapp.com",
@@ -11,28 +13,37 @@ const firebaseConfig = {
   appId: "1:771666579494:web:876e83d45cb799377656e7"
 };
 
-// Inicializar Firebase
+// Inicialización de Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializar Cloud Firestore con la versión 13.2.0
+// Inizialización de Firestore
 const db = getFirestore(app);
+
+//Inizialización de autenticación con Google
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+
+//Variables para comprobaciones
 let currentUser = null;
 let showingFavorites = false;
 let popupHandlerAttached = false;
 
+//Botones autenticación
 const authButton = document.getElementById("auth_button");
 const authStatus = document.getElementById("auth_status");
+
+//Contador de favoritos
 const favoritesCount = document.getElementById("favorites_count");
 let authStatusTimer;
 let favoritesCountRequest = 0;
 
+//Funcion de contador favoritos
 function renderFavoritesCount(count) {
   favoritesCount.textContent = String(count);
   favoritesCount.setAttribute("aria-label", `${count} terremotos guardados`);
 }
 
+// Funcion para actualizar el contador de favoritos
 async function updateFavoritesCount() {
   const request = ++favoritesCountRequest;
   const userId = currentUser?.uid;
@@ -52,6 +63,7 @@ async function updateFavoritesCount() {
   }
 }
 
+//Función para cambiar estado al boton de inicio de sesion
 function setAuthButtonLabel(user) {
   if (user) {
     authButton.textContent = "Cerrar sesión";
@@ -63,6 +75,7 @@ function setAuthButtonLabel(user) {
   authButton.innerHTML = 'Iniciar sesión con <span class="google-word" aria-hidden="true"><span class="google-blue">G</span><span class="google-red">o</span><span class="google-yellow">o</span><span class="google-blue">g</span><span class="google-green">l</span><span class="google-red">e</span></span>';
 }
 
+//Funcion de mensaje de autenficiacion
 function showAuthMessage(message) {
   authStatus.textContent = message;
   authStatus.classList.add("is-visible");
@@ -72,6 +85,7 @@ function showAuthMessage(message) {
   }, 4000);
 }
 
+//Evento sobre boton autentificacion
 authButton.addEventListener("click", async () => {
   try {
     if (currentUser) await signOut(auth);
@@ -82,6 +96,7 @@ authButton.addEventListener("click", async () => {
   }
 });
 
+//Funcion para cuando cambia la autentificacion
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
   setAuthButtonLabel(user);
@@ -96,6 +111,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+//Funcion de animacion de espera de carga de contenido
 function setMapLoading(mapId, isLoading) {
   const indicator = document.querySelector(`#${mapId} .map-loading`);
   if (indicator) indicator.hidden = !isLoading;
@@ -169,6 +185,7 @@ async function liveEarthquakes() {
         markerColor = "#1C8919";
       }
 
+      //variable para inyectar datos y luego recogerlos con la funcion de firebase
       const earthquake = {
         title,
         date,
@@ -178,6 +195,7 @@ async function liveEarthquakes() {
         magType,
         coordinates: earthquakesCoordinates,
       };
+
       const marker = L.circleMarker([earthquakesCoordinates[1], earthquakesCoordinates[0]], {
         // Añado los marcadores al mapa con las coordenadas extraidas de "earthquakesCoordinates"
         radius: 6 + mag * 2, // Tamaño del marcador según la magnitud del terremoto
@@ -264,6 +282,7 @@ document.getElementById("show_api").addEventListener("click", () => {
   liveEarthquakes();
 });
 
+//Funcion que permite ver los terrmotos guardados
 async function showFavoriteEarthquakes() {
   if (!currentUser) {
     showAuthMessage("Inicia sesión para ver tus terremotos favoritos.");
@@ -384,8 +403,6 @@ async function filtredEarthquakes() {
         map_filtered.removeLayer(layer);
       }
     });
-
-
 
     filteredFeatures.forEach((feature) => {
       let earthquakesProperties = feature.properties; // Extraigo los datos de las propiedades de cada terremoto
