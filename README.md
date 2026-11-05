@@ -4,6 +4,12 @@ Aplicación web para consultar y explorar terremotos de todo el mundo. Muestra e
 
 La interfaz está en español y utiliza dos mapas Leaflet: uno oscuro para la actividad reciente y otro claro para los resultados filtrados.
 
+## Vista previa
+
+![Vista previa editada de la interfaz del proyecto](assets/earthquake-dashboard-preview.png)
+
+Imagen de presentación editada a partir de la aplicación. Es ilustrativa: los marcadores y los nombres del mapa no son una captura de datos en tiempo real.
+
 ## Funcionalidades
 
 - **Actividad de las últimas 24 horas:** carga el feed GeoJSON diario del USGS y representa los eventos con marcadores circulares.
