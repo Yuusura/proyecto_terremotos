@@ -1,27 +1,163 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./style.css" />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
-    <!-- archivo CSS de Leaflet -->
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
-    <!-- archivo JS de Leaflet -->
-    <script src="./script.js" defer></script>
-    <title>Proyecto terremotos</title>
-  </head>
-  <body>
-    <div id="map"></div>
-    <div id="map_filtered"></div>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- archivo CSS de Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="./style.css" />
+  <!-- archivo JS de Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Mi script.js -->
+  <script type="module" src="./script.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+  <title>Proyecto terremotos</title>
+
+</head>
+
+<body>
+  <main>
+    <section id="main_half" class="main_map">
+      <h1>
+        <b>ACTIVIDAD SÍSMICA MUNDIAL:</b>
+        <span class="data-source">Datos del USGS</span>
+        <span class="auth_panel">
+          <button type="button" id="auth_button" aria-label="Iniciar sesión con Google">
+            Iniciar sesión con
+            <span class="google-word" aria-hidden="true"><span class="google-blue">G</span><span
+                class="google-red">o</span><span class="google-yellow">o</span><span class="google-blue">g</span><span
+                class="google-green">l</span><span class="google-red">e</span></span>
+          </button>
+        </span>
+      </h1>
+      <button type="button" id="show_api" class="red">Últimas 24 horas</button>
+      <button type="button" id="show_favorites"><span class="redHeart">❤</span> Guardados <span id="favorites_count" class="favorites-count" aria-label="Cantidad de favoritos">0</span></button>
+      <span id="auth_status" role="status" aria-live="polite"></span>
+      <div id="map" class="map">
+        <div class="map-legend map-legend-main" aria-label="Leyenda de magnitudes">
+          <strong>Magnitud</strong>
+          <span><i class="legend-dot magnitude-0"></i>0–1</span>
+          <span><i class="legend-dot magnitude-1"></i>1–2</span>
+          <span><i class="legend-dot magnitude-2"></i>2–3</span>
+          <span><i class="legend-dot magnitude-3"></i>3–4</span>
+          <span><i class="legend-dot magnitude-4"></i>4–5</span>
+          <span><i class="legend-dot magnitude-5"></i>5–6</span>
+          <span><i class="legend-dot magnitude-6"></i>6–7</span>
+          <span><i class="legend-dot magnitude-7"></i>7+</span>
+        </div>
+        <div class="map-loading" role="status"><span class="spinner"></span><span>Cargando terremotos…</span></div>
+      </div>
+      <aside id="information_bar" class="information_bar">
+      </aside>
+    </section>
+    <div id="swipe_button" class="swipe_button">
+      <button type="button" id="swipe" class="swipe">Filtrar terremotos ↓</button>
+    </div>
+    <section id="secondary_half" class="secondary_map">
+      <form id="filter_bar" class="filter_bar">
+        <h2 class="map_filtered_title"><u>Filtrar terremotos:</u></h2>
+        <div id="inputs_box" class="inputs_box">
+          <div id="mag_box" class="mag_box">
+            <h3>Magnitud:</h3>
+            <ul>
+              <li>
+                <label>
+                  <input id="all" type="radio" name="mag" value="all" checked>
+                  <!-- "checked" deja “Todo” seleccionado al abrir la página. -->
+                  Todo
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="0-1" type="radio" name="mag" value="0-1">
+                  0 - 1
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="1-2" type="radio" name="mag" value="1-2">
+                  1 - 2
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="2-3" type="radio" name="mag" value="2-3">
+                  2 - 3
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="3-4" type="radio" name="mag" value="3-4">
+                  3 - 4
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="4-5" type="radio" name="mag" value="4-5">
+                  4 - 5
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="5-6" type="radio" name="mag" value="5-6">
+                  5 - 6
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="6-7" type="radio" name="mag" value="6-7">
+                  6 - 7
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input id="7+" type="radio" name="mag" value="7+">
+                  7+
+                </label>
+              </li>
+            </ul>
+          </div>
+          <div id="date_box" class="date_box">
+            <h3>Fecha:</h3>
+            <div class="calendars_box">
+              <div id="start_box" class="start_box">
+                <label for="start_date">Desde:</label>
+                <input type="date" id="start_date">
+              </div>
+              <div id="end_box" class="end_box">
+                <label for="end_date">Hasta:</label>
+                <input type="date" id="end_date">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="search_box" class="search_box">
+          <button id="search_button" class="search_button" type="submit">Buscar</button>
+        </div>
+      </form>
+      <div id="map_filtered" class="map_filtered">
+        <div class="map-legend map-legend-light" aria-label="Leyenda de magnitudes">
+          <strong>Magnitud</strong>
+          <span><i class="legend-dot magnitude-0"></i>0–1</span>
+          <span><i class="legend-dot magnitude-1"></i>1–2</span>
+          <span><i class="legend-dot magnitude-2"></i>2–3</span>
+          <span><i class="legend-dot magnitude-3"></i>3–4</span>
+          <span><i class="legend-dot magnitude-4"></i>4–5</span>
+          <span><i class="legend-dot magnitude-5"></i>5–6</span>
+          <span><i class="legend-dot magnitude-6"></i>6–7</span>
+          <span><i class="legend-dot magnitude-7"></i>7+</span>
+        </div>
+        <div class="map-loading" role="status"><span class="spinner"></span><span>Cargando mapa filtrado…</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+
 </html>

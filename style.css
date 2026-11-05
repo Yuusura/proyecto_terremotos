@@ -1,9 +1,542 @@
-html, body {
+/* Hace que los textos y componentes hereden la fuente global. */
+* {
+    font-family: "Inter Tight", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+/* Quita el margen y el relleno que el navegador añade a la página. */
+html,
+body {
     margin: 0;
     padding: 0;
 }
 
-#map {
-    height: 80vh; /* Ocupará toda la altura de la ventana del navegador. */
+h1 {
+    position: relative;
+    color: white;
+    background-color: black;
+    height: 10vh;
+    font-size: 25px;
+    font-weight: 300;
+    text-align: center;
+    align-content: center;
+    margin: 0;
 }
 
+/* Muestra la fuente de los datos como una línea secundaria fina bajo el título. */
+.data-source {
+    display: block;
+    margin-top: 3px;
+    color: #E7654F;
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+}
+
+ul {
+    list-style: none;
+    padding-left: 130px;
+}
+
+li {
+    padding: 10px 0px;
+}
+
+.map {
+    position: relative;
+    height: 83vh;
+}
+
+/* Estilo de la línea de atribuciones */
+.leaflet-control-attribution {
+    max-height: 14px;
+    font-size: 9px;
+}
+
+.information_bar {
+    height: 7vh;
+    background-color: #333333;
+}
+
+.secondary_map {
+    display: flex;
+    height: 100vh;
+    background-color: #C1C9CC;
+}
+
+.map_filtered {
+    position: relative;
+    height: 100vh;
+    width: 50%;
+}
+
+/* Coloca la leyenda encima del mapa, arriba a la derecha, sin bloquear el uso del mapa. */
+.map-legend {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 900;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px 11px;
+    max-width: calc(100% - 28px);
+    padding: 10px 12px;
+    border: 1px solid;
+    border-radius: 10px;
+    color: #333936;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 16%);
+    font-size: 11px;
+    pointer-events: none;
+    border-color: rgb(32 37 35 / 14%);
+    background: rgb(255 254 250 / 70%);
+}
+
+/* Coloca la leyenda del mapa principal en su esquina inferior izquierda. */
+.map-legend-main {
+    top: auto;
+    right: auto;
+    bottom: 14px;
+    left: 14px;
+}
+
+/* Alinea cada punto de color con su rango de magnitud. */
+.map-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+/* Dibuja los círculos de color usados para explicar los marcadores sísmicos. */
+.legend-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+}
+
+/* Colores asociados a cada intervalo; coinciden con los colores de los marcadores en script.js. */
+.magnitude-0 { background: #F0F0F0; }
+.magnitude-1 { background: #1C8919; }
+.magnitude-2 { background: #8E911C; }
+.magnitude-3 { background: #FAF016; }
+.magnitude-4 { background: #F6CE1E; }
+.magnitude-5 { background: #FC9D15; }
+.magnitude-6 { background: #F61719; }
+.magnitude-7 { background: #F817FA; }
+
+.map-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #fff;
+    background: rgb(0 0 0 / 62%);
+    font-size: 1rem;
+}
+
+.map-loading[hidden] {
+    display: none;
+}
+
+.spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgb(255 255 255 / 35%);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Sitúa el acceso con Google dentro del encabezado, alineado a la derecha. */
+.auth_panel {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    z-index: 1002;
+    display: inline-flex;
+    align-items: center;
+    transform: translateY(-50%);
+}
+
+#auth_button {
+    border: 1px solid #111;
+    border-radius: 7px;
+    padding: 6px 10px;
+    background: #f2f3f0;
+    cursor: pointer;
+}
+
+/* Presenta los avisos de sesión como una tarjeta centrada y oculta por defecto. */
+#auth_status {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 2000;
+    width: max-content;
+    max-width: min(420px, calc(100vw - 36px));
+    padding: 16px 22px;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 12px;
+    background: rgb(32 37 35 / 96%);
+    color: #fff;
+    box-shadow: 0 16px 48px rgb(0 0 0 / 28%);
+    font-size: 15px;
+    line-height: 1.45;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, calc(-50% + 10px));
+    transition: opacity .35s ease, transform .35s ease, visibility 0s linear .35s;
+    pointer-events: none;
+}
+
+/* Muestra el aviso centrado y activa su entrada con una transición breve. */
+#auth_status.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%);
+    transition: opacity .35s ease, transform .35s ease, visibility 0s;
+}
+
+.filter_bar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 50%;
+}
+
+.swipe_button {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    width: 100%;
+    bottom: 10px;
+    z-index: 1000;
+}
+
+.swipe,
+.search_button,
+#show_api,
+#show_favorites {
+    background-color: #F2F3F0;
+    border-radius: 7px;
+    font-size: 17px;
+    border: 1px solid black;
+    padding: 4px;
+    width: 180px;
+    cursor: pointer;
+}
+
+.redHeart {
+    color: #BC0202;
+}
+
+.map_filtered_title {
+    padding: 100px 20px 30px;
+    margin-top: 100px;
+}
+
+.inputs_box {
+    display: flex;
+    padding: 0px 50px;
+    gap: 10px;
+}
+
+.mag_box,
+.date_box {
+    width: 50%;
+    border-radius: 15px;
+    padding: 5px 20px;
+    background-color: #F2F3F0;
+    color: #222222
+}
+
+.calendars_box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.start_box,
+.end_box {
+    padding-top: 40px;
+}
+
+/* Estiliza solo el contenido de las tarjetas de magnitud y fecha; conserva las tarjetas exteriores. */
+.mag_box h3,
+.date_box h3 {
+    margin: 8px 0 18px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Distribuye los rangos de magnitud en una cuadrícula de chips compactos. */
+.mag_box ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Quita el espacio vertical que antes separaba cada radio como una lista larga. */
+.mag_box li {
+    min-width: 0;
+    padding: 0;
+}
+
+/* Convierte cada opción de magnitud en un chip clicable con borde fino. */
+.mag_box label {
+    position: relative;
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 7px;
+    border: 1px solid #d8d8d2;
+    border-radius: 9px;
+    background: #fffefa;
+    color: #343a37;
+    font-size: 14px;
+    line-height: 1.1;
+    cursor: pointer;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+}
+
+/* Esconde el radio nativo sin quitarlo del teclado ni de la interacción. */
+.mag_box input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+/* Resalta el intervalo seleccionado con fondo oscuro como en la referencia. */
+.mag_box label:has(input:checked) {
+    border-color: #202523;
+    background: #202523;
+    color: #fff;
+}
+
+/* Mantiene un indicador visible al recorrer las opciones con teclado. */
+.mag_box label:focus-within {
+    outline: 3px solid rgb(231 101 79 / 38%);
+    outline-offset: 2px;
+}
+
+/* Apila los campos Desde y Hasta dentro de la tarjeta de fecha. */
+.calendars_box {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    align-items: start;
+    gap: 18px;
+    padding: 12px 10px 18px;
+}
+
+/* Coloca cada etiqueta de fecha encima de su campo, alineada a la izquierda. */
+.start_box,
+.end_box {
+    display: flex;
+    min-width: 0;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-top: 0;
+}
+
+/* Da claridad a las etiquetas Desde y Hasta. */
+.start_box label,
+.end_box label {
+    color: #626963;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Unifica el tamaño y la forma de los dos campos de fecha. */
+.start_box input[type="date"],
+.end_box input[type="date"] {
+    width: min(200px, 100%);
+    max-width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 0 9px;
+    border: 1px solid #d8d8d2;
+    border-radius: 8px;
+    background: #fff;
+    color: #343a37;
+    font-size: 13px;
+}
+
+.search_box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+.main_map {
+    position: relative;
+}
+
+#show_api,
+#show_favorites {
+    position: absolute;
+    bottom: calc(0vh + 10px);
+    z-index: 1002;
+}
+
+#show_api {
+    left: 35%;
+}
+
+#show_favorites {
+    right: 35%;
+}
+
+/* Da a todos los botones el mismo ritmo tipográfico y una respuesta suave al interactuar. */
+button {
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1.15;
+    border-radius: 10px;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+/* Unifica la forma, tamaño y borde de los controles principales de la página. */
+#auth_button,
+#show_api,
+#show_favorites,
+#swipe,
+#search_button {
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #deded9;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgb(20 24 22 / 8%);
+    font-size: 14px;
+}
+
+/* Mantiene el acceso a Google claro y legible dentro de la cabecera oscura. */
+#auth_button {
+    border-color: #e7e5df;
+    background: #fffefa;
+    color: #202523;
+}
+
+/* Da a la palabra Google sus colores de marca en el botón de acceso. */
+.google-word {
+    display: inline-flex;
+    margin-left: 2px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+/* Colores oficiales usados en las letras del nombre Google. */
+.google-blue { color: #4285F4; }
+.google-red { color: #EA4335; }
+.google-yellow { color: #FBBC05; }
+.google-green { color: #34A853; }
+
+/* Señala el mapa de las últimas 24 horas como la vista activa con el color coral. */
+#show_api {
+    border-color: #e7654f;
+    background: #e7654f;
+    color: #fff;
+}
+
+/* Presenta Guardados como una acción secundaria clara. */
+#show_favorites {
+    background: #fffefa;
+    color: #343a37;
+}
+
+/* Presenta el total de favoritos como una pequeña insignia dentro del botón. */
+.favorites-count {
+    display: inline-flex;
+    min-width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 3px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #ecece7;
+    color: #343a37;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Resalta el botón para moverse entre el mapa en vivo y los filtros. */
+#swipe {
+    border-color: #202523;
+    background: #202523;
+    color: #fff;
+}
+
+/* Da contraste al botón que aplica los filtros. */
+#search_button {
+    border-color: #202523;
+    background: #202523;
+    color: #fff;
+}
+
+/* Evita que la antigua clase roja aplique brillo y un estilo distinto al botón En vivo. */
+#show_api.red {
+    color: #fff;
+    text-shadow: none;
+}
+
+/* Aplica el mismo lenguaje visual a los botones de favoritos de las ventanas del mapa. */
+.leaflet-popup-content button {
+    display: block;
+    margin-top: 12px;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #e7654f;
+    border-radius: 8px;
+    background: #e7654f;
+    color: #fff;
+    font-size: 13px;
+}
+
+/* Usa texto negro en la acción para eliminar un favorito. */
+.leaflet-popup-content button.favorite-toggle,
+.leaflet-popup-content button.remove-favorite {
+    color: #202523;
+}
+
+/* Añade una elevación discreta al pasar el cursor por los botones disponibles. */
+button:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 13px rgb(20 24 22 / 14%);
+}
+
+/* Oscurece suavemente los botones principales al pasar el cursor. */
+#swipe:hover,
+#search_button:hover {
+    border-color: #39413e;
+    background: #39413e;
+}
+
+/* Atenúa los botones que están desactivados mientras se procesa una acción. */
+button:disabled {
+    cursor: not-allowed;
+    opacity: .58;
+    box-shadow: none;
+}
