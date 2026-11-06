@@ -46,7 +46,7 @@ li {
 
 .map {
     position: relative;
-    height: 83vh;
+    height: 80vh;
 }
 
 /* Estilo de la línea de atribuciones */
@@ -56,7 +56,7 @@ li {
 }
 
 .information_bar {
-    height: 7vh;
+    height: 10vh;
     background-color: #333333;
 }
 
@@ -401,11 +401,11 @@ li {
 }
 
 #show_api {
-    left: 35%;
+    left: 30%;
 }
 
 #show_favorites {
-    right: 35%;
+    right: 30%;
 }
 
 /* Da a todos los botones el mismo ritmo tipográfico y una respuesta suave al interactuar. */

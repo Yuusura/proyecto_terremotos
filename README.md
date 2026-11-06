@@ -64,24 +64,6 @@ proyecto_terremotos/
 
 No abras el archivo con doble clic (`file://`): los módulos JavaScript y las llamadas a servicios externos pueden no funcionar desde ese esquema. Inicia un servidor local desde la carpeta del proyecto.
 
-### Con Python
-
-En PowerShell o una terminal, dentro de `proyecto_terremotos`, ejecuta:
-
-```powershell
-py -m http.server 8000
-```
-
-Si el comando `py` no está disponible, prueba:
-
-```powershell
-python -m http.server 8000
-```
-
-Abre después [http://localhost:8000](http://localhost:8000). Para detener el servidor, vuelve a la terminal y pulsa `Ctrl+C`.
-
-También puedes utilizar una extensión de servidor local para tu editor, como Live Server de Visual Studio Code.
-
 ## Configurar Firebase
 
 La integración de Firebase está en `script.js`. Para usar una instancia propia:
